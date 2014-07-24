@@ -11,4 +11,4 @@ app.get('/photo', function(req, res){
 	res.send(photo);
 });
 
-app.listen(8064);
+app.listen(8080);
