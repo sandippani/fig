@@ -1,2 +1,11 @@
 node_modules/
+Servers
+target
+.settings
+.springBeans
+.metadata
+*.project
+*.classpath
+bin
+gen
 
