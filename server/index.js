@@ -10,5 +10,5 @@ app.get('/photo', function(req, res){
 	var photo = 'here is the photo';
 	res.send(photo);
 });
-
+    
 app.listen(8080); 
