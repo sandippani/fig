@@ -1,0 +1,57 @@
+DROP DATABASE IF EXISTS fig_db;
+CREATE DATABASE fig_db DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+
+/opt/git-repos/fig
+
+*****************
+
+ubuntu@ip-172-31-17-120:/opt/git-repos/fig$ git status
+# On branch master
+nothing to commit (working directory clean)
+
+
+****************************************
+nothing to commit (working directory clean) means: We can directly pull code from github.
+
+*****
+sudo git pull
+
+****
+*****
+
+goto /opt/git-repos/fig/java-sts-workspace/com.sandip.fig
+
+****
+
+***Build War File****
+
+sudo mvn clean install -DskipTests=true
+
+*******
+
+******Stop Tomcat7 service***
+
+sudo service tomcat7 stop
+
+*****************
+
+********Remove Old Deployed fig.war file ***************
+rm -rf /var/lib/tomcat7/webapps/fig*
+
+*****************
+
+*** Location to put fig.war file ***
+
+/var/lib/tomcat7/webapps
+
+copy the generated war file from the maven command in the above step to webapps directory of tomcat.
+
+cp /opt/git-repos/fig/java-sts-workspace/com.sandip.fig/target/fig.war /var/lib/tomcat7/webapps/
+
+************************
+
+******Start Tomcat7 service***
+
+sudo service tomcat7 start
+
+*****************

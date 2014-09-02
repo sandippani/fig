@@ -15,15 +15,19 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class CameraPhotoCaptureActivity extends Activity  {
+public class CameraPhotoCaptureActivity extends Activity implements ImageUploadListener  {
 	ImageView viewImage;
     Button b;
+    
+    private String savedImageFilePath;
  
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,16 +102,20 @@ public class CameraPhotoCaptureActivity extends Activity  {
                    
                     viewImage.setImageBitmap(bitmap);
  
-                    String path = android.os.Environment
-                            .getExternalStorageDirectory()
-                            + File.separator
-                            + "Phoenix" + File.separator + "default";
+                    File parent = new File(android.os.Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "fig");
+                    if(!parent.exists()){
+                    	boolean dirCreated = parent.mkdirs();
+                    	if(!dirCreated){
+                    		System.out.println("...Directory could not be created.."+parent.getAbsolutePath());
+                    	}
+                    }
                     f.delete();
                     OutputStream outFile = null;
-                    File file = new File(path, String.valueOf(System.currentTimeMillis()) + ".jpg");
+                    File finalFileName = new File(parent.getPath(), String.valueOf(System.currentTimeMillis()) + ".jpg");
                     try {
-                        outFile = new FileOutputStream(file);
+                        outFile = new FileOutputStream(finalFileName);
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 85, outFile);
+                        savedImageFilePath=finalFileName.getAbsolutePath();
                         outFile.flush();
                         outFile.close();
                     } catch (FileNotFoundException e) {
@@ -128,11 +136,28 @@ public class CameraPhotoCaptureActivity extends Activity  {
                 c.moveToFirst();
                 int columnIndex = c.getColumnIndex(filePath[0]);
                 String picturePath = c.getString(columnIndex);
+                savedImageFilePath = picturePath;
                 c.close();
                 Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
                 Log.w("path of image from gallery......******************.........", picturePath+"");
                 viewImage.setImageBitmap(thumbnail);
             }
         }
-    }   
+    }
+    
+    public void uploadPhoto(View view){
+    	if(savedImageFilePath == null || savedImageFilePath.trim().length()==0){
+    		Toast.makeText(getApplicationContext(), "Image not found.", Toast.LENGTH_LONG).show();
+    	}else{
+    	String comment = "mycomment";
+    	String[] input= new String[]{savedImageFilePath,comment};
+    	ImageUploader imageUploader = new ImageUploader(this);
+    	imageUploader.execute(input);
+    	}
+    }
+
+	@Override
+	public void onImageUploadResult(String result) {
+		Toast.makeText(this, result, Toast.LENGTH_LONG).show();
+	}
 }
