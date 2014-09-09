@@ -14,14 +14,9 @@ import com.sandip.fig.service.JdbcService;
 
 @Service("jdbcService")
 public class JdbcServiceImpl implements JdbcService {
-	
+	@Autowired
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-	@Autowired
-	public void setDataSource(DataSource dataSource) {
-		namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
-	}
-	
 	public void test(){
 		List<Map<String, Object>> value= namedParameterJdbcTemplate.queryForList("select * from test", new HashMap<String, Object>());
 		System.out.println("....Map..."+value);

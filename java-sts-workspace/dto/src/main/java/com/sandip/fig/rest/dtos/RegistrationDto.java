@@ -9,12 +9,13 @@ public class RegistrationDto implements Serializable {
 	 */
 	private static final long serialVersionUID = 2652212285003388474L;
 	
-	
 	private String email;
 	
 	private String username;
 	
 	private String password;
+	private Long id;
+	private boolean active = true;
 
 	public String getEmail() {
 		return email;
@@ -28,6 +29,14 @@ public class RegistrationDto implements Serializable {
 		return username;
 	}
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
@@ -38,6 +47,14 @@ public class RegistrationDto implements Serializable {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 	
 	

@@ -32,6 +32,9 @@
    <property name="statementsCacheSize" value="${db.bonecp.statementsCacheSize}"/>
    <property name="releaseHelperThreads" value="${db.bonecp.releaseHelperThreads}"/>
 </bean>
+<bean id="jdbctemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+<constructor-arg ref="dataSource"> </constructor-arg>
+</bean>
 	
 	<context:component-scan base-package="com.sandip.fig.service"/>
 
