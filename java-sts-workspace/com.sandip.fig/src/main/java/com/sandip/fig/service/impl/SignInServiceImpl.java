@@ -16,17 +16,18 @@ public class SignInServiceImpl implements SignInService {
 	@Autowired
 	private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	@Override
-	public void signin(String email, String password) throws SignInException {
+	public Long signin(String email, String password) throws SignInException {
 		// TODO Auto-generated method stub
 		Map<String, Object> paramaterMap = new HashMap<String, Object>();
-		String selectQuery ="Select email from registration where email=:email and password=:password";
+		String selectQuery ="Select id from registration where email=:email and password=:password";
 		paramaterMap.put("email", email);
 		paramaterMap.put("password", password);
-		List<String> emailaddress = namedParameterJdbcTemplate.queryForList(selectQuery, paramaterMap, String.class);
-		if(CollectionUtils.isEmpty(emailaddress))
+		List<Long> userId = namedParameterJdbcTemplate.queryForList(selectQuery, paramaterMap, Long.class);
+		if(CollectionUtils.isEmpty(userId))
 		{
 			throw new SignInException("Either Email or password is not matching");
 		}
+		return userId.get(0);
 
 	}
 

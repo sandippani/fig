@@ -50,7 +50,8 @@ public class ImageUploader extends AsyncTask<String, Void, String> {
 			FileBody bin = new FileBody(new File(imageFile));
 			MultipartEntityBuilder multiPartEntityBuilder = MultipartEntityBuilder.create();
 			multiPartEntityBuilder.addPart("image", bin);
-			multiPartEntityBuilder.addTextBody("comment", comment);
+			multiPartEntityBuilder.addTextBody("comments", comment);
+			multiPartEntityBuilder.addTextBody("createdBy", SystemGlobalVariable.getCurrentUserId().toString());
 			httpPostRequest.setEntity(multiPartEntityBuilder.build());
 
 			// Execute POST request to the given URL
