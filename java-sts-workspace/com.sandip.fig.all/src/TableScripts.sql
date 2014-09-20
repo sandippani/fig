@@ -1,3 +1,5 @@
+CREATE DATABASE `fig_db` /*!40100 COLLATE 'utf8_general_ci' */
+
 CREATE TABLE `registration` (
 	`id` BIGINT(20) NOT NULL AUTO_INCREMENT,
 	`active` BIT(1) NOT NULL DEFAULT b'0',
