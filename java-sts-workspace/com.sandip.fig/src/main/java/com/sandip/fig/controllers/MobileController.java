@@ -10,6 +10,7 @@ import java.io.InputStream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.sandip.fig.exception.ImageUploadException;
 import com.sandip.fig.exception.RegistartionException;
 import com.sandip.fig.exception.SignInException;
+import com.sandip.fig.rest.dtos.ImageResponseDto;
+import com.sandip.fig.rest.dtos.ImageResponseListDto;
 import com.sandip.fig.rest.dtos.ImageUploadDto;
 import com.sandip.fig.rest.dtos.RegistrationDto;
 import com.sandip.fig.rest.dtos.ResponseDto;
@@ -114,18 +117,14 @@ public class MobileController {
 	@RequestMapping(value = "/getimage/{imageid}")
 	@ResponseBody
 	public void getImageFile(@PathVariable(value="imageid") Long imageId, HttpServletResponse response  ) throws IOException{
-		
 		String filepath=imageUploadservice.readImagePath(imageId);
-		
 		File file = new File(filepath);
         response.setContentType("image/jpg");
         response.setContentLength((int) file.length());
         response.setHeader("Content-Disposition",
                 "inline; filename=\"" + file.getName() + "\"");
-
         BufferedInputStream input = null;
         BufferedOutputStream output = null;
-
         try {
             input = new BufferedInputStream(new FileInputStream(file));
             output = new BufferedOutputStream(response.getOutputStream());
@@ -148,5 +147,12 @@ public class MobileController {
                 }
             }
         }
+	}
+	@RequestMapping(value = "/list/image/{page}/{pagesize}")
+	@ResponseBody
+	public ImageResponseListDto listImages(@PathVariable(value="page") int page,@PathVariable(value="pagesize") int pageSize){
+		Page<ImageResponseDto> result= imageUploadservice.listImages(page, pageSize);
+		ImageResponseListDto imageResponseListDto =new ImageResponseListDto(result.getContent());
+		return imageResponseListDto;
 	}
 }
