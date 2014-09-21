@@ -35,15 +35,23 @@
   </LinearLayout>
  
    <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:orientation="vertical"
-          android:padding="10dp" >
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="vertical"
+       android:padding="0dp" >
+
    <Button
         android:id="@+id/Button01"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Upload Photo" 
         android:onClick="uploadPhoto"/>
+   <Button
+        android:id="@+id/BtnViewGallary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View Gallary" 
+        android:onClick="viewGallary"/>
    </LinearLayout>
+
 </LinearLayout> 

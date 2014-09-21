@@ -153,6 +153,9 @@ public class MobileController {
 	public ImageResponseListDto listImages(@PathVariable(value="page") int page,@PathVariable(value="pagesize") int pageSize){
 		Page<ImageResponseDto> result= imageUploadservice.listImages(page, pageSize);
 		ImageResponseListDto imageResponseListDto =new ImageResponseListDto(result.getContent());
+		if(result.hasNext()){
+			imageResponseListDto.setNextPageId(page+1);
+		}
 		return imageResponseListDto;
 	}
 }

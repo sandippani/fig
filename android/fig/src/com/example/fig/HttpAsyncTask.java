@@ -7,55 +7,71 @@ import java.io.UnsupportedEncodingException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.sandip.fig.rest.dtos.ResponseDto;
 
-public class HttpAsyncTask extends AsyncTask<Void, Void, ResponseDto> {
-	
+public class HttpAsyncTask<T> extends AsyncTask<Void, Void, Object> {
+
 	private Serializable serverObject;
-	
+
 	private HttpRequestType httpRequestType;
-	
-	private String targetUrl;
-	
+
+	private final String targetUrl;
+
 	private HttpClientListener httpClientListener;
-	
+
 	private Object extraInputParameters;
 
-	public HttpAsyncTask(String requestedUrl) {
+	private Class<?> returnType = ResponseDto.class;
+
+	private ProgressDialog pd;
+
+	public HttpAsyncTask(String requestedUrl,
+			HttpClientListener httpClientListener) {
 		super();
-		if(requestedUrl == null || "".equals(requestedUrl)){
-			throw new IllegalArgumentException("Server Request Url cannot be null");
+		if (requestedUrl == null || "".equals(requestedUrl)) {
+			throw new IllegalArgumentException(
+					"Server Request Url cannot be null");
+		}
+		if (httpClientListener != null && httpClientListener instanceof Context) {
+			pd = new ProgressDialog((Context) httpClientListener);
 		}
 		this.httpRequestType = HttpRequestType.GET;
-		targetUrl = SystemConstants.SERVER_URL+requestedUrl;
+		targetUrl = SystemConstants.SERVER_URL + requestedUrl;
+		this.httpClientListener = httpClientListener;
 	}
-	
-	public HttpAsyncTask(String requestedUrl,Object extraInputParameters) {
-		this(requestedUrl);
+
+	public HttpAsyncTask(String requestedUrl, Object extraInputParameters) {
+		this(requestedUrl, null);
 		this.extraInputParameters = extraInputParameters;
 	}
-	
+
 	public HttpAsyncTask(Serializable serverObject,
 			HttpRequestType httpRequestType, String requestedUrl) {
-		this(requestedUrl);
+		this(requestedUrl, null);
 		this.serverObject = serverObject;
 		this.httpRequestType = httpRequestType;
 	}
-
 
 	public HttpAsyncTask(Serializable serverObject,
 			HttpRequestType httpRequestType, String requestedUrl,
 			HttpClientListener httpClientListener, Object extraInputParameters) {
-		this(requestedUrl);
+		this(requestedUrl, httpClientListener);
 		this.serverObject = serverObject;
 		this.httpRequestType = httpRequestType;
 		this.httpClientListener = httpClientListener;
 		this.extraInputParameters = extraInputParameters;
+	}
+
+	public void setReturnType(Class<?> returnType) {
+		this.returnType = returnType;
 	}
 
 	public Object getExtraInputParameters() {
@@ -67,11 +83,23 @@ public class HttpAsyncTask extends AsyncTask<Void, Void, ResponseDto> {
 	}
 
 	@Override
-	protected ResponseDto doInBackground(Void... params) {
-		ResponseDto responseDto = null;
+	protected void onPreExecute() {
+		if (pd != null) {
+			pd.setTitle("Processing...");
+			pd.setMessage("Please wait.");
+			pd.setCancelable(false);
+			pd.setIndeterminate(true);
+			pd.show();
+		}
+	}
+
+	@Override
+	protected Object doInBackground(Void... params) {
+		Object responseDto = null;
+
 		switch (httpRequestType) {
 		case GET:
-			doWithGetRequest();
+			responseDto = doWithGetRequest();
 			break;
 		case POST:
 			responseDto = doWithPostRequest();
@@ -83,25 +111,27 @@ public class HttpAsyncTask extends AsyncTask<Void, Void, ResponseDto> {
 		return responseDto;
 	}
 
-	private ResponseDto doWithPostRequest() {
+	private Object doWithPostRequest() {
 
 		InputStream inputStream = null;
 		HttpPost httpPost = new HttpPost(targetUrl);
-		ResponseDto responseDto = null;
-		 try {
-			 StringEntity entity = null;
-			 String json = null;
-			 if(serverObject != null){
-				 json= HttpClientUtils.convertToJsonString(serverObject);
-				 entity = new StringEntity(json);
-				 httpPost.setEntity(entity);
-			 }
-			 httpPost.setHeader("Accept", "application/json");
-			 httpPost.setHeader("Content-type", "application/json");
-			 HttpResponse httpResponse = HttpClientUtils.getHttpClient().execute(httpPost);
-			 inputStream = httpResponse.getEntity().getContent();
-			 json = HttpClientUtils.convertInputStreamToString(inputStream);
-			 responseDto = HttpClientUtils.convertjsonToResponseObject(json, ResponseDto.class);
+		Object responseDto = null;
+		try {
+			StringEntity entity = null;
+			String json = null;
+			if (serverObject != null) {
+				json = HttpClientUtils.convertToJsonString(serverObject);
+				entity = new StringEntity(json);
+				httpPost.setEntity(entity);
+			}
+			httpPost.setHeader("Accept", "application/json");
+			httpPost.setHeader("Content-type", "application/json");
+			HttpResponse httpResponse = HttpClientUtils.getHttpClient()
+					.execute(httpPost);
+			inputStream = httpResponse.getEntity().getContent();
+			json = HttpClientUtils.convertInputStreamToString(inputStream);
+			responseDto = HttpClientUtils.convertjsonToResponseObject(json,
+					returnType);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} catch (ClientProtocolException e) {
@@ -111,22 +141,44 @@ public class HttpAsyncTask extends AsyncTask<Void, Void, ResponseDto> {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		 return responseDto;
-		
+		return responseDto;
+
 	}
 
-	private void doWithGetRequest() {}
+	private Object doWithGetRequest() {
+		InputStream inputStream = null;
+		HttpGet httpGet = new HttpGet(targetUrl);
+		Object responseDto = null;
+		try {
+			String json = null;
+			httpGet.setHeader("Accept", "application/json");
+			httpGet.setHeader("Content-type", "application/json");
+			HttpResponse httpResponse = HttpClientUtils.getHttpClient()
+					.execute(httpGet);
+			inputStream = httpResponse.getEntity().getContent();
+			json = HttpClientUtils.convertInputStreamToString(inputStream);
+			responseDto = HttpClientUtils.convertjsonToResponseObject(json,
+					returnType);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return responseDto;
+	}
 
 	@Override
-	protected void onPostExecute(ResponseDto result) {
-		if(httpClientListener != null){
-			httpClientListener.processResponse(result,extraInputParameters);
+	protected void onPostExecute(Object result) {
+		if (pd != null) {
+			pd.dismiss();
+		}
+		if (httpClientListener != null) {
+			httpClientListener.processResponse(result, extraInputParameters);
 		}
 	}
-	
-	
-	
-
-	
 
 }

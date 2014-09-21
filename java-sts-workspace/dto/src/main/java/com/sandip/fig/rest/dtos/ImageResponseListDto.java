@@ -13,6 +13,8 @@ public class ImageResponseListDto implements Serializable {
 	
 	private List<ImageResponseDto> list = new ArrayList<ImageResponseDto>();
 	
+	private int nextPageId;
+	
 	public ImageResponseListDto() {
 	}
 
@@ -27,6 +29,16 @@ public class ImageResponseListDto implements Serializable {
 	public void setList(List<ImageResponseDto> list) {
 		this.list = list;
 	}
+
+	public int getNextPageId() {
+		return nextPageId;
+	}
+
+	public void setNextPageId(int nextPageId) {
+		this.nextPageId = nextPageId;
+	}
+	
+	
 	
 	
 

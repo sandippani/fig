@@ -160,4 +160,11 @@ public class CameraPhotoCaptureActivity extends Activity implements ImageUploadL
 	public void onImageUploadResult(String result) {
 		Toast.makeText(this, result, Toast.LENGTH_LONG).show();
 	}
+	
+	public void viewGallary(View view)
+	{
+		Intent intent;
+		intent = new Intent(getApplicationContext(), ImageViewList.class);
+		startActivity(intent);
+	}
 }

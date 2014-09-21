@@ -30,6 +30,7 @@
         <activity android:name="SignInActivity"></activity>
         <activity android:name="SignUpActivity"></activity>
         <activity android:name="CameraPhotoCaptureActivity"></activity>
+        <activity android:name="ImageViewList"></activity>
 
     </application>
 

@@ -56,7 +56,7 @@ public class ImageUploadserviceImpl implements ImageUploadservice {
 	@Override
 	public Page<ImageResponseDto> listImages(int page, int pageSize) {
 		String countQuery = "select count(*) from upload_images";
-		String sqlQuery = "select id,comments from upload_images";
+		String sqlQuery = "select id,comments from upload_images order by id desc";
 		String finalSqlQuery = sqlQuery
 				+ FigSystemUtils.getLimit(page, pageSize);
 		Map<String, Object> paramMap = new HashMap<String, Object>();
